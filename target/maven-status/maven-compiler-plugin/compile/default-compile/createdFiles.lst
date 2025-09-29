@@ -1,0 +1,6 @@
+com\example\mcporder\McpOrderServerApplication.class
+com\example\mcporder\model\Order.class
+com\example\mcporder\service\OrderService.class
+com\example\mcporder\tools\OrderTools.class
+com\example\mcporder\controller\ChatController.class
+com\example\mcporder\repository\OrderRepository.class

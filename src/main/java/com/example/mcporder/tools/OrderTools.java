@@ -3,10 +3,8 @@ package com.example.mcporder.tools;
 import com.example.mcporder.model.Order;
 import com.example.mcporder.service.OrderService;
 import org.springframework.stereotype.Component;
-// Les annotations exactes peuvent varier selon la version de Spring AI.
-// Adapte les imports si nécessaire.
-import org.springframework.ai.tool.annotation.Tool;
-import org.springframework.ai.tool.annotation.ToolParam;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
@@ -14,15 +12,23 @@ import java.util.Optional;
 public class OrderTools {
 
     private final OrderService orderService;
+    private final ChatClient chatClient;
 
-    public OrderTools(OrderService orderService) {
+    @Autowired
+    public OrderTools(OrderService orderService, ChatClient.Builder chatClientBuilder) {
         this.orderService = orderService;
+        this.chatClient = chatClientBuilder.build();
     }
 
-    @Tool(name = "getOrderByNumber",
-          description = "Récupère les détails d'une commande par son numéro")
-    public Order getOrderByNumber(@ToolParam(name = "orderNumber", description = "Numéro de commande") String orderNumber) {
-        Optional<Order> o = orderService.findByOrderNumber(orderNumber);
-        return o.orElse(null);
+    public Order getOrderDetails(String orderNumber) {
+        Optional<Order> order = orderService.findByOrderNumber(orderNumber);
+        return order.orElse(null);
+    }
+
+    public String processOrderQuery(String query) {
+        return chatClient.prompt()
+                .user("Voici la question de l'utilisateur sur les commandes: " + query)
+                .call()
+                .content();
     }
 }
